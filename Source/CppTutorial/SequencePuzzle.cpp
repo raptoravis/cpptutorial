@@ -11,6 +11,10 @@ ASequencePuzzle::ASequencePuzzle() : NumberOfOptions(4), DistanceFromOrigin(100)
 	// disable tick events
 	PrimaryActorTick.bCanEverTick = false;
 
+	for (int32 i = 0; i < NumberOfOptions; ++i)
+	{
+		Sequence.Add(i);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +38,8 @@ void ASequencePuzzle::BeginPlay()
 
 			ASequencePuzzlebutton* Button = Cast<ASequencePuzzlebutton>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ButtonClass, Transform));
 			Button->Color = Colors[i];//FLinearColor(1, 0, 0, 0);
+			Buttons.Add(Button);
+
 			UGameplayStatics::FinishSpawningActor(Button, Transform);
 
 			OffsetVector = Rotator.RotateVector(OffsetVector);

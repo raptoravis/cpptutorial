@@ -28,8 +28,14 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float DistanceFromOrigin;
-//public:	
-//	// Called every frame
-//	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(BlueprintReadOnly)
+	TArray<ASequencePuzzlebutton*> Buttons;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<int32> Sequence;
+
+public:
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void PlaySequence();
 };
