@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-ASequencePuzzle::ASequencePuzzle()
+ASequencePuzzle::ASequencePuzzle() : NumberOfOptions(4), DistanceFromOrigin(100)
 {
 	// disable tick events
 	PrimaryActorTick.bCanEverTick = false;
@@ -17,15 +17,29 @@ ASequencePuzzle::ASequencePuzzle()
 void ASequencePuzzle::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	FLinearColor Colors[] = { FLinearColor(1, 0, 0, 0), FLinearColor(0, 1, 0, 0),FLinearColor(0, 0, 1, 0),FLinearColor(1, 1, 0, 0) };
+
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		ASequencePuzzlebutton* Button = Cast<ASequencePuzzlebutton>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ButtonClass, GetTransform()));
-		Button->Color = FLinearColor(1, 0, 0, 0);
-		UGameplayStatics::FinishSpawningActor(Button, GetTransform());
+		FVector OffsetVector(DistanceFromOrigin, 0, DistanceFromOrigin);
+		FRotator Rotator(90, 0, 0);
 
-		//ASequencePuzzlebutton* Button = World->SpawnActor<ASequencePuzzlebutton>(ButtonClass, GetTransform());
+		for (int32 i = 0; i < NumberOfOptions; ++i)
+		{
+			FTransform Transform = GetTransform();
+			//Transform.SetLocation(OffsetVector);
+			Transform.AddToTranslation(OffsetVector);
+
+			ASequencePuzzlebutton* Button = Cast<ASequencePuzzlebutton>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ButtonClass, Transform));
+			Button->Color = Colors[i];//FLinearColor(1, 0, 0, 0);
+			UGameplayStatics::FinishSpawningActor(Button, Transform);
+
+			OffsetVector = Rotator.RotateVector(OffsetVector);
+
+			//ASequencePuzzlebutton* Button = World->SpawnActor<ASequencePuzzlebutton>(ButtonClass, GetTransform());
+		}
 	}
 }
 
