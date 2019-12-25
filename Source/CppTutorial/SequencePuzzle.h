@@ -38,4 +38,12 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void PlaySequence();
+
+	UFUNCTION(BlueprintCallable)
+	void Guess(int32 Guess);
+private:
+	// Add one to the sequence
+	void ExtendSequence();
+
+	int32 SequenceIndex;
 };

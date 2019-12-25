@@ -6,15 +6,16 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-ASequencePuzzle::ASequencePuzzle() : NumberOfOptions(4), DistanceFromOrigin(100)
+ASequencePuzzle::ASequencePuzzle() : NumberOfOptions(4), DistanceFromOrigin(100), SequenceIndex(0)
 {
 	// disable tick events
 	PrimaryActorTick.bCanEverTick = false;
 
-	for (int32 i = 0; i < NumberOfOptions; ++i)
-	{
-		Sequence.Add(i);
-	}
+	//for (int32 i = 0; i < NumberOfOptions; ++i)
+	//{
+	//	Sequence.Add(i);
+	//}
+	ExtendSequence();
 }
 
 // Called when the game starts or when spawned
@@ -37,7 +38,11 @@ void ASequencePuzzle::BeginPlay()
 			Transform.AddToTranslation(OffsetVector);
 
 			ASequencePuzzlebutton* Button = Cast<ASequencePuzzlebutton>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ButtonClass, Transform));
+
 			Button->Color = Colors[i];//FLinearColor(1, 0, 0, 0);
+			Button->Index = i;
+			Button->Puzzle = this;
+
 			Buttons.Add(Button);
 
 			UGameplayStatics::FinishSpawningActor(Button, Transform);
@@ -47,6 +52,42 @@ void ASequencePuzzle::BeginPlay()
 			//ASequencePuzzlebutton* Button = World->SpawnActor<ASequencePuzzlebutton>(ButtonClass, GetTransform());
 		}
 	}
+}
+
+void ASequencePuzzle::Guess(int32 Guess)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("ASequencePuzzle::Guess"));
+	int32 Actual = Sequence[SequenceIndex];
+	if (Guess == Actual)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("correct Guess %d"), Guess);
+		SequenceIndex++;
+		if (SequenceIndex == Sequence.Num())
+		{
+			SequenceIndex = 0;
+			ExtendSequence();
+			PlaySequence();
+		}
+		else
+		{
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("incorrect Guess %d"), Guess);
+
+		SequenceIndex = 0;
+		Sequence.Empty();
+		ExtendSequence();
+		PlaySequence();
+	}
+}
+
+void ASequencePuzzle::ExtendSequence()
+{
+	int32 ToAdd = FMath::RandRange(0, NumberOfOptions - 1);
+
+	Sequence.Add(ToAdd);
 }
 
 //// Called every frame
